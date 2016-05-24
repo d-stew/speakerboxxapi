@@ -4,7 +4,7 @@ var knex = require('../db/knex');
 var bcrypt = require('bcrypt');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.json('respond with a resource');
+  res.status(222).json('Setup your SPA');
 });
 
 router.post('/signup', function(req, res, next) {
@@ -49,9 +49,13 @@ router.post('/signup', function(req, res, next) {
             .first()
             .then(function (result) {
               if (result) {
-                var validPassword = bcrypt.compareSync(req.body.password, result.password)
+                console.log("theres an email" + result);
+                var validPassword = bcrypt.compareSync(req.body.password, result.password_hash);
                 if (validPassword) {
                   res.redirect('/')
+                }
+                else {
+                  console.log(validPassword + "valid password was false");
                 }
               } else {
                 res.status(422).json({
