@@ -8,6 +8,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
+  console.log(req.body);
   var errors = []
 
   if (!req.body.email || !req.body.email.trim()) errors.push("Email can't be blank");
@@ -39,8 +40,8 @@ router.post('/signup', function(req, res, next) {
            knex('users').insert(data)
              .returning('*')
              .then(function (users) {
-               console.log(users);
-               res.redirect('/')
+              //  console.log(users);
+               res.status(200).json(users);
              })
 
          } else {
