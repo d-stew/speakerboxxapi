@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-  const errors = []
+  var errors = []
 
   if (!req.body.email || !req.body.email.trim()) errors.push("Email can't be blank");
   if (!req.body.name || !req.body.name.trim()) errors.push("Name can't be blank");
@@ -27,8 +27,8 @@ router.post('/signup', function(req, res, next) {
       .first()
       .then(function (result) {
          if (result.count === "0") {
-           const saltRounds = 4;
-           const passwordHash = bcrypt.hashSync(req.body.password, saltRounds);
+           var saltRounds = 4;
+           var passwordHash = bcrypt.hashSync(req.body.password, saltRounds);
 
            var data = {
              name: req.body.name,
