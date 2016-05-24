@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var knex = require('../db/knex');
 var bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.status(222).json('Setup your SPA');
@@ -67,6 +69,23 @@ router.post('/signup', function(req, res, next) {
         }
       })
   }
+});
+
+router.post('/login', function(req, res, next) {
+  return knex('users')
+    .where({email: req.body.email})
+    .first()
+    .then(function (result) {
+      if (result) {
+        if (bcrypt.compareSync(req.body.password, result.password_hash)) {
+          res.json({token: jwt.sign({ id: result.id }, process.env.JWT_SECRET)})
+        } else {
+          res.status(422).send({})
+        }
+      } else {
+        res.status(422).send({})
+      }
+    })
 });
 
 module.exports = router;
