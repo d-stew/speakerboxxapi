@@ -31,14 +31,7 @@ function checkToken (req,res,next){
     }
 }
 
-router.get('/me', checkToken, function (req,res, next) {
-  // checkUser({user_id: user}).then( function (response){
-  //   res.status(200).json(response)
-  // })
-  console.log("howd we get here");
-  res.status(269).json('errahs?????')
-})
-
+router.get('/me', checkToken);
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.status(222).json('Setup your SPA');
