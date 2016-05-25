@@ -8,22 +8,19 @@ __Install the things__
 ```bash
 $ touch .env
 ```
-copy thangs from exampl.env
+##Then copy thangs from exampl.env into .env
+
+__Create_db__
 ```bash
+$ createdb speakeasy_db
 $ npm install
-
+$ knex migrate:latest
+$ knex seed:run (optional)
 ```
 
-__Run Webpack__
+__Run Api__
 ```bash
-
-$ npm run dev
-
+$ nodemon
 ```
-### Create_db
-createdb speakeasy_db
-create .env inside root of directory, put the example.env stuff inside
-npm install
-knex migrate:latest
-knex seed:run
-nodemon
+
+
