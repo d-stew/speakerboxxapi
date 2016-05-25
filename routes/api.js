@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/signup', function(req, res, next) {
   console.log(req.body);
-  var errors = []
+  var errors = [];
 
   if (!req.body.email || !req.body.email.trim()) errors.push("Email can't be blank");
   if (!req.body.name || !req.body.name.trim()) errors.push("Name can't be blank");
@@ -43,10 +43,11 @@ router.post('/signup', function(req, res, next) {
              .returning('*')
              .then(function (userObj) {
                console.log(userObj[0]);
-                    if (userObj[0].id) {
+               delete userObj[0].password_hash;
+               if (userObj[0].id){
                       res.json({
                         token: jwt.sign({ id: userObj[0].id }, process.env.JWT_SECRET),
-                        name: userObj[0].name
+                        user: userObj[0]
                       });
                     } else {
                       res.status(422).json('shit')
@@ -85,7 +86,8 @@ router.post('/login', function(req, res, next) {
     .then(function (result) {
       if (result) {
         if (bcrypt.compareSync(req.body.password, result.password_hash)) {
-          res.json({token: jwt.sign({ id: result.id }, process.env.JWT_SECRET)})
+          delete result.password_hash
+          res.json({user: result, token: jwt.sign({ id: result.id }, process.env.JWT_SECRET)})
         } else {
           res.status(422).send({})
         }
