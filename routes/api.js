@@ -39,14 +39,21 @@ router.post('/signup', function(req, res, next) {
              password_hash: passwordHash,
            }
 
-           knex('users').insert(data)
+          return knex('users').insert(data)
              .returning('*')
-             .then(function (users) {
-              //  console.log(users);
-               res.status(200).json(users);
-             })
-
-         } else {
+             .then(function (userObj) {
+               console.log(userObj[0]);
+                    if (userObj[0].id) {
+                      res.json({
+                        token: jwt.sign({ id: userObj[0].id }, process.env.JWT_SECRET),
+                        name: userObj[0].name
+                      });
+                    } else {
+                      res.status(422).json('shit')
+                    }
+                  })
+                }
+          else {
            return knex('users')
             .whereRaw('lower(email) = ?', req.body.email.toLowerCase())
             .first()
