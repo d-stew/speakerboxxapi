@@ -17,7 +17,8 @@ function checkToken (req,res,next){
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     knex('users').where({id: payload.id}).first().then(function (user) {
       if (user) {
-        res.json({id: user.id, name: user.name})
+        delete user.password_hash;
+        res.status(200).json({user})
       } else {
         res.status(403).json({
           error: "Invalid ID"
@@ -91,7 +92,7 @@ router.post('/signup', function(req, res, next) {
                 console.log("theres an email" + result);
                 var validPassword = bcrypt.compareSync(req.body.password, result.password_hash);
                 if (validPassword) {
-                  res.redirect('/')
+                  res.status(422).json({error: "Email taken"})
                 }
                 else {
                   console.log(validPassword + "valid password was false");
@@ -117,10 +118,10 @@ router.post('/login', function(req, res, next) {
           delete result.password_hash
           res.json({user: result, token: jwt.sign({ id: result.id }, process.env.JWT_SECRET)})
         } else {
-          res.status(422).send({})
+          res.status(422).send({error: 'No Bueno'})
         }
       } else {
-        res.status(422).send({})
+        res.status(422).send({error: 'No Bueno'})
       }
     })
 });
