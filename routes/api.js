@@ -126,4 +126,64 @@ router.post('/login', function(req, res, next) {
     })
 });
 
+router.get('/phrases', function(req, res, next) {
+  return knex('phrases')
+  .then(function(phrases){
+    if(phrases){
+      res.status(200).json({phrases});
+    } else {
+      res.status(404).json({error: 'wait wut'})
+    }
+  })
+});
+
+router.get('/phrases', function(req, res, next) {
+  return knex('phrases')
+  .then(function(phrases){
+    if(phrases){
+      console.log(phrases);
+      res.status(200).json({phrases});
+    } else {
+      res.status(404).json({error: 'wait wut'})
+    }
+  })
+});
+
+router.get('/categories/:id', function(req, res, next) {
+  var isUser = req.params.id;
+  var categoryList;
+  knex('categories')
+    .then(function(categoriesReturn) {
+      categoryList = categoriesReturn;
+    }).then(function() {
+      knex('categories').where({
+          user_id: req.params.id
+        })
+        .reduce(function(category_arr, category) {
+          return knex('phrases')
+            .innerJoin('phrases_categories', 'phrases.id', 'phrases_categories.phrase_id')
+            .where({
+              category_id: category.id
+            })
+            .reduce(function(phrase_arr, phrase) {
+              phrase_arr.push(phrase);
+              return phrase_arr;
+            }, []).then(function(phrases) {
+              category.phrases = phrases;
+              category_arr.push(category);
+              return category_arr;
+            })
+        }, [])
+        .then(function(categories) {
+          console.log("cats", categories);
+          console.log("cat list", categoryList);
+          res.status(200).json({
+            categoriesBody: categories,
+            categories: categoryList,
+            userID: isUser
+          });
+        })
+    })
+});
+
 module.exports = router;
