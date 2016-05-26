@@ -195,6 +195,7 @@ router.post('/categories/:user_id', function(req, res, next) {
         })
       }
     }
+    res.status(422).json({error: "u dont own eet"})
   } else {
     res.status(422).json({error: "fuck off already"})
   }
