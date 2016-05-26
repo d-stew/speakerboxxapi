@@ -126,6 +126,30 @@ router.post('/login', function(req, res, next) {
     })
 });
 
+router.post('/phrases', function(req, res, next) {
+  return knex('phrases')
+  .insert({phrase: req.body.phrase, user_id: req.body.user_id})
+  .returning("*")
+  .then(function(stuff) {
+    if(stuff) {
+      res.status(200).json({stuff});
+    } else {
+      res.status(404).json({error: 'wait wut'})
+    }
+  })
+})
+router.get('/phrases/:user_id', function(req, res, next) {
+  return knex('phrases')
+  .where({user_id: req.params.user_id})
+  .then(function(phrases) {
+    if(phrases) {
+      res.status(200).json({phrases});
+    } else {
+      res.status(404).json({error: 'wait wut'})
+    }
+  })
+})
+
 router.get('/phrases', function(req, res, next) {
   return knex('phrases')
   .then(function(phrases){
@@ -137,17 +161,6 @@ router.get('/phrases', function(req, res, next) {
   })
 });
 
-router.get('/phrases', function(req, res, next) {
-  return knex('phrases')
-  .then(function(phrases){
-    if(phrases){
-      console.log(phrases);
-      res.status(200).json({phrases});
-    } else {
-      res.status(404).json({error: 'wait wut'})
-    }
-  })
-});
 
 router.get('/categories/:id', function(req, res, next) {
   var isUser = req.params.id;
