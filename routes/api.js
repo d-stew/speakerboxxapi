@@ -161,6 +161,45 @@ router.get('/phrases', function(req, res, next) {
   })
 });
 
+router.post('/categories', function(req, res, next) {
+  return knex('categories')
+  .insert({user_id: req.body.user_id, name: req.body.name,
+          description: req.body.description})
+  .returning("*")
+  .then(function(cats) {
+    if (cats) {
+      res.status(200).json({cats});
+    } else {
+      res.status(404).json({error: `That's a fucking error`})
+    }
+  })
+});
+
+router.post('/categories/:user_id', function(req, res, next) {
+  return knex('categories')
+  .where({user_id: req.params.user_id})
+  .then(function(cats) {
+    if(cats){
+    for (var i = 0; i < cats.length; i++) {
+      console.log(cats[i]);
+      if(req.body.category_id === cats[i].id) {
+        return knex('phrases_categories')
+        .insert({category_id: req.body.category_id, phrase_id: req.body.phrase_id})
+        .returning("*")
+        .then(function(cats) {
+          if (cats) {
+            res.status(200).json({cats});
+          } else {
+            res.status(404).json({error: `That's a fucking error`})
+          }
+        })
+      }
+    }
+  } else {
+    res.status(422).json({error: "fuck off already"})
+  }
+  })
+});
 
 router.get('/categories/:id', function(req, res, next) {
   var isUser = req.params.id;
