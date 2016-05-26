@@ -127,8 +127,13 @@ router.post('/login', function(req, res, next) {
 });
 
 router.post('/phrases', function(req, res, next) {
-  return knex('phrases')
-  .insert({phrase: req.body.phrase, user_id: req.body.user_id})
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.split(' ')[1];
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("payload", payload);
+    console.log("req body", req.body);
+   knex('phrases')
+  .insert({phrase: req.body.phrase, user_id: payload.id})
   .returning("*")
   .then(function(stuff) {
     if(stuff) {
@@ -137,7 +142,7 @@ router.post('/phrases', function(req, res, next) {
       res.status(404).json({error: 'wait wut'})
     }
   })
-})
+}})
 router.get('/phrases/:user_id', function(req, res, next) {
   return knex('phrases')
   .where({user_id: req.params.user_id})
