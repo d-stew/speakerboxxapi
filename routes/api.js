@@ -135,9 +135,9 @@ router.post('/phrases', function(req, res, next) {
    knex('phrases')
   .insert({phrase: req.body.phrase, user_id: payload.id})
   .returning("*")
-  .then(function(stuff) {
-    if(stuff) {
-      res.status(200).json({stuff});
+  .then(function(phrase) {
+    if(phrase) {
+      res.status(200).json({phrase});
     } else {
       res.status(404).json({error: 'wait wut'})
     }
